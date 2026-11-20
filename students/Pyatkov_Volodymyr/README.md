@@ -1,30 +1,30 @@
 # Mini DevOps Dashboard
 
-## 1. Project Description
+## 1. Опис проєкту
 
-Mini DevOps Dashboard is a simple web application built using HTML, CSS, and JavaScript.
+Mini DevOps Dashboard — це простий вебзастосунок, створений за допомогою HTML, CSS та JavaScript.
 
-The project demonstrates containerization, CI/CD automation, Docker image publishing, and cloud infrastructure management.
+Проєкт демонструє використання контейнеризації, автоматизації CI/CD, публікації Docker-образів та керування хмарною інфраструктурою.
 
-### Features
+### Основні можливості
 
-- Digital clock displaying the current time.
-- Interactive click counter.
-- Light and dark theme switcher.
-- Frontend health-check button.
-- Responsive user interface.
+- Цифровий годинник із відображенням поточного часу.
+- Інтерактивний лічильник натискань.
+- Перемикання світлої та темної теми.
+- Кнопка перевірки працездатності інтерфейсу.
+- Адаптивний користувацький інтерфейс.
 
-## 2. Technologies Used
+## 2. Використані технології
 
 - HTML5, CSS3, JavaScript
-- Docker and Nginx
-- Git and GitHub
+- Docker та Nginx
+- Git та GitHub
 - GitHub Actions
 - Docker Hub
 - AWS EC2
 - Terraform
 
-## 3. Project Structure
+## 3. Структура проєкту
 
 ```text
 Final-project/
@@ -52,121 +52,126 @@ Final-project/
         └── README.md
 ```
 
-The root `.github/workflows/` directory contains the GitHub Actions workflows executed by GitHub.
+Каталог `.github/workflows/` у корені репозиторію містить GitHub Actions workflows, які автоматично виконуються GitHub.
 
-## 4. Local Setup and Installation
+## 4. Локальне встановлення та запуск
 
-### Prerequisites
+### Необхідні інструменти
 
 - Git
 - Docker
 
-### Step 1. Clone the repository
+### Крок 1. Клонування репозиторію
 
 ```bash
 git clone https://github.com/EndermanElectro121/Final-project.git
 cd Final-project/students/Pyatkov_Volodymyr
 ```
 
-### Step 2. Build the Docker image
+### Крок 2. Створення Docker-образу
 
 ```bash
 docker build -t mini-devops-dashboard .
 ```
 
-### Step 3. Run the container
+### Крок 3. Запуск контейнера
 
 ```bash
 docker run -d -p 8080:80 --name mini-dashboard mini-devops-dashboard
 ```
 
-### Step 4. Open the application
+### Крок 4. Відкриття застосунку
 
-Open:
+Відкрийте у браузері:
 
 ```text
 http://localhost:8080
 ```
 
-### Step 5. Stop the container
+### Крок 5. Зупинка контейнера
 
 ```bash
 docker stop mini-dashboard
 docker rm mini-dashboard
 ```
 
-## 5. GitHub Actions Secrets
+## 5. Налаштування GitHub Secrets
 
-The following repository secrets are required for automated deployment:
+Для автоматичної публікації Docker-образу та розгортання застосунку використовуються такі секрети:
 
-| Secret | Description |
+| Назва секрету | Призначення |
 |---|---|
-| `DOCKERHUB_USERNAME` | Docker Hub username |
-| `DOCKERHUB_TOKEN` | Docker Hub access token |
-| `EC2_HOST` | Public IP address of the EC2 instance |
-| `EC2_USER` | SSH username |
-| `EC2_SSH_KEY_B64` | Base64-encoded private SSH key |
+| `DOCKERHUB_USERNAME` | Ім'я користувача Docker Hub |
+| `DOCKERHUB_TOKEN` | Токен доступу Docker Hub |
+| `EC2_HOST` | Публічна IP-адреса або DNS-ім'я EC2 |
+| `EC2_USER` | Ім'я користувача для SSH-підключення |
+| `EC2_SSH_KEY_B64` | Приватний SSH-ключ у форматі Base64 |
 
-Add secrets under:
+Секрети додаються в розділі:
 
 **GitHub → Settings → Secrets and variables → Actions.**
 
-Never commit passwords, tokens, private SSH keys, or other sensitive information.
+**Важливо:**
 
-## 6. CI/CD Pipeline
+- Не додавайте паролі, токени та приватні SSH-ключі до репозиторію.
+- Не публікуйте файли `.env` та приватні ключі.
+- Зберігайте конфіденційні дані в GitHub Secrets.
+- Не виводьте значення секретів у журналах GitHub Actions.
 
-GitHub Actions automates application testing and deployment.
+## 6. Автоматизація CI/CD
+
+Для автоматизації перевірки та розгортання застосунку використовується GitHub Actions.
 
 ### Continuous Integration (CI)
 
-The CI workflow runs when code is pushed to `main` or a pull request targets `main`.
+Workflow CI запускається після push до гілки `main` або створення Pull Request із цільовою гілкою `main`.
 
-It performs the following steps:
+Основні етапи:
 
-1. Checks out the repository.
-2. Verifies application files.
-3. Builds the Docker image.
-4. Runs the application in a test container.
-5. Checks the HTML, CSS, and JavaScript files using HTTP requests.
+1. Отримання коду з репозиторію.
+2. Перевірка наявності файлів застосунку.
+3. Створення Docker-образу.
+4. Запуск тестового Docker-контейнера.
+5. Перевірка доступності HTML, CSS та JavaScript через HTTP-запити.
 
 ### Continuous Deployment (CD)
 
-The CD workflow starts automatically after a successful CI run on `main`.
+Workflow CD автоматично запускається після успішного виконання CI для гілки `main`.
 
-It performs the following steps:
+Основні етапи:
 
-1. Checks out the tested commit.
-2. Authenticates with Docker Hub.
-3. Builds the Docker image.
-4. Pushes `latest` and commit-specific image tags to Docker Hub.
-5. Connects to AWS EC2 through SSH.
-6. Pulls the new Docker image.
-7. Replaces the previous application container.
-8. Starts the updated container.
+1. Отримання перевіреної версії коду.
+2. Авторизація в Docker Hub.
+3. Створення Docker-образу.
+4. Публікація образів із тегами `latest` та ідентифікатором commit.
+5. Підключення до AWS EC2 через SSH.
+6. Завантаження нового Docker-образу.
+7. Заміна попереднього контейнера.
+8. Запуск оновленого контейнера.
 
-The application is available at:
+Після розгортання застосунок доступний за адресою:
 
 ```text
 http://13.51.200.227
 ```
 
-## 7. Infrastructure Management with Terraform
+## 7. Керування інфраструктурою за допомогою Terraform
 
-Terraform is used to automate the creation and configuration of AWS infrastructure resources.
+Terraform використовується для автоматизації створення та налаштування ресурсів AWS.
 
-The current Terraform configuration:
+Поточна конфігурація Terraform виконує такі завдання:
 
-- Retrieves information about an existing EC2 instance.
-- Creates an AWS Security Group.
-- Configures inbound SSH (port 22) and HTTP (port 80) rules.
-- Attaches the Security Group to the existing EC2 network interface.
-- Provides outputs containing the EC2 instance information and Security Group ID.
+- Отримує інформацію про вже наявний EC2 instance.
+- Створює AWS Security Group.
+- Налаштовує вхідні правила SSH (порт 22) та HTTP (порт 80).
+- Підключає створену Security Group до мережевого інтерфейсу наявного EC2.
+- Надає вихідні параметри з інформацією про EC2 та Security Group.
 
-The EC2 instance itself is created separately and is not managed by Terraform.
+**Примітка:** сам EC2 instance створений окремо та не керується Terraform у цій конфігурації.
 
-### Terraform Commands
+### Основні команди Terraform
 
-Run these commands inside the `infra` directory:
+Команди виконуються в каталозі `infra`:
 
 ```bash
 terraform init
@@ -175,14 +180,14 @@ terraform plan
 terraform apply
 ```
 
-To inspect managed resources:
+Для перегляду ресурсів, якими керує Terraform:
 
 ```bash
 terraform state list
 ```
 
-Terraform state and variable files containing infrastructure details must not be committed to the repository.
+Файли стану Terraform та файли змінних із конфіденційними даними не повинні додаватися до Git-репозиторію.
 
-## 8. Project Goal
+## 8. Мета проєкту
 
-The goal of this project is to demonstrate practical DevOps skills, including Docker containerization, automated CI/CD pipelines, cloud deployment, and Infrastructure as Code using Terraform.
+Метою проєкту є отримання практичних навичок роботи з DevOps-інструментами, зокрема контейнеризацією Docker, автоматизацією CI/CD, розгортанням застосунків у хмарному середовищі AWS та керуванням інфраструктурою за допомогою Terraform.
