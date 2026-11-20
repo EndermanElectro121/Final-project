@@ -1,0 +1,94 @@
+
+name: CD - Docker Hub and EC2 Deployment
+
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout tested commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: students/Pyatkov_Volodymyr
+          file: students/Pyatkov_Volodymyr/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/mini-devops-dashboard:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/mini-devops-dashboard:${{ github.event.workflow_run.head_sha }}
+
+      - name: Configure SSH
+        env:
+          EC2_SSH_KEY_B64: ${{ secrets.EC2_SSH_KEY_B64 }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "$EC2_SSH_KEY_B64" | base64 --decode > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+
+      - name: Add EC2 host to known_hosts
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy application to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          IMAGE="$DOCKERHUB_USERNAME/mini-devops-dashboard:$IMAGE_TAG"
+
+          ssh -i ~/.ssh/ec2_key \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "IMAGE='$IMAGE' bash -s" <<'EOF'
+              set -e
+
+              docker pull "$IMAGE"
+
+              docker rm -f mini-dashboard || true
+
+              docker run -d \
+                --name mini-dashboard \
+                --restart unless-stopped \
+                -p 80:80 \
+                "$IMAGE"
+
+              docker ps --filter name=mini-dashboard
+
+              docker image prune -f
+
+              echo "Application deployed successfully"
+          EOF

@@ -1,0 +1,56 @@
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify application files
+        run: |
+          test -f students/Pyatkov_Volodymyr/src/index.html
+          test -f students/Pyatkov_Volodymyr/src/style.css
+          test -f students/Pyatkov_Volodymyr/src/script.js
+          test -f students/Pyatkov_Volodymyr/Dockerfile
+          echo "All application files exist"
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t mini-devops-dashboard:test \
+            -f students/Pyatkov_Volodymyr/Dockerfile \
+            students/Pyatkov_Volodymyr
+
+      - name: Run Docker container
+        run: |
+          docker run -d \
+            --name dashboard-test \
+            -p 8080:80 \
+            mini-devops-dashboard:test
+
+      - name: Test application
+        run: |
+          set -e
+          trap 'docker rm -f dashboard-test >/dev/null 2>&1 || true' EXIT
+
+          curl --fail http://localhost:8080/
+          curl --fail http://localhost:8080/style.css
+          curl --fail http://localhost:8080/script.js
+
+          echo "Application tests passed"
+
+      - name: Cleanup
+        if: always()
+        run: docker rm -f dashboard-test || true

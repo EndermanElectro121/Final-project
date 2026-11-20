@@ -1,0 +1,24 @@
+cat > .gitignore <<'EOF'
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+terraform.tfvars
+*.pem
+
+# Node.js
+node_modules/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# AWS CLI installer
+/aws/
+
+# Build output
+/dist/
+EOF

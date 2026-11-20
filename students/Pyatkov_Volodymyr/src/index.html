@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini DevOps Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header>
+            <div class="logo">🚀 Mini DevOps Dashboard</div>
+            <button id="themeButton">🌙 Dark mode</button>
+        </header>
+        <main>
+            <section class="welcome">
+                <h1>Welcome to DevOps Dashboard</h1>
+                <p>A simple application deployed using Docker and CI/CD.</p>
+            </section>
+            <section class="cards">
+                <div class="card">
+                    <h2>Application Status</h2>
+                    <div id="status" class="status">🟢 Online</div>
+                    <p>Frontend is running</p>
+                </div>
+                <div class="card">
+                    <h2>Current Time</h2>
+                    <div id="clock" class="value">00:00:00</div>
+                    <p>Local system time</p>
+                </div>
+                <div class="card">
+                    <h2>Click Counter</h2>
+                    <div id="counter" class="value">0</div>
+                    <button id="counterButton">Click me!</button>
+                </div>
+            </section>
+            <section class="health">
+                <h2>Health Check</h2>
+                <p id="healthMessage">Check application availability</p>
+                <button id="healthButton">Check Status</button>
+            </section>
+        </main>
+        <footer>
+            <p>Mini DevOps Dashboard | Docker | GitHub Actions | AWS EC2</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

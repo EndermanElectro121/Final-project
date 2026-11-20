@@ -1,0 +1,17 @@
+.git
+.github
+.aws
+aws/
+dist/
+infra/
+node_modules/
+.env
+.env.*
+!.env.example
+*.zip
+*.pem
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+README.md
